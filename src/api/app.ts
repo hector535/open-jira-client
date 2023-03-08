@@ -1,10 +1,29 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { Task } from "../type/index.js";
 
 const axiosInstance = axios.create({
   baseURL: "https://open-jira-i5to.onrender.com/api",
   withCredentials: true,
 });
+
+const onResponseError = (error: AxiosError): Promise<AxiosError> => {
+  const data = error.response?.data;
+
+  if (data) {
+    const { name } = data as { name: string };
+
+    if (
+      name &&
+      (name === "JsonWebTokenError" || name === "MissingTokenError")
+    ) {
+      localStorage.clear();
+      window.location.href = "/";
+    }
+  }
+  return Promise.reject(error);
+};
+
+axiosInstance.interceptors.response.use(null, onResponseError);
 
 export const getTaskById = (id: number): Promise<Task> =>
   axiosInstance.get(`/tasks/${id}`).then((res) => res.data);

@@ -6,6 +6,7 @@ import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
 
 import { useStore } from "../store/store";
+import { timeSince } from "../utils";
 
 type Props = {
   id: number;
@@ -36,7 +37,7 @@ const EntryCard = ({ id, description, createdAt }: Props) => {
         </CardContent>
 
         <CardActions sx={{ display: "flex", justifyContent: "flex-end" }}>
-          <Typography variant="body2">hace {createdAt}</Typography>
+          <Typography variant="body2">hace {timeSince(createdAt)}</Typography>
         </CardActions>
       </CardActionArea>
     </Card>

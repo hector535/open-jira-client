@@ -69,9 +69,16 @@ const Auth = ({ mode }: Props) => {
     login(getValues("email"));
   }, [isSuccess]);
 
+  useEffect(() => {
+    if (!error) return;
+
+    setTimeout(mutationReset, 5000);
+  }, [error]);
+
   const onSubmit: SubmitHandler<AuthFormType> = ({ email, password }) => {
     mutate({ email, password, mode });
     setValue("password", "");
+    setValue("confirmPassword", "");
   };
 
   return (
@@ -138,7 +145,9 @@ const Auth = ({ mode }: Props) => {
           )}
 
           {!!error && (
-            <Alert severity="error">{(error as any).response.data.error}</Alert>
+            <Alert severity="error">
+              {(error as any).response.data.details}
+            </Alert>
           )}
 
           <LoadingButton type="submit" loading={isLoading} variant="contained">
