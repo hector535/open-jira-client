@@ -5,7 +5,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { AuthFormType } from "../type";
 import { loginSchema, registerSchema } from "../zod-schemas";
 import { useAuth } from "../hooks";
-import { useStore } from "../store/store";
 
 import LoadingButton from "@mui/lab/LoadingButton";
 import Avatar from "@mui/material/Avatar";
@@ -42,7 +41,6 @@ const Auth = ({ mode }: Props) => {
     formState: { errors },
     handleSubmit,
     reset,
-    getValues,
     setValue,
   } = useForm<AuthFormType>({
     defaultValues: {
@@ -53,21 +51,7 @@ const Auth = ({ mode }: Props) => {
     resolver: zodResolver(mode === "signin" ? loginSchema : registerSchema),
   });
 
-  const login = useStore((state) => state.login);
-
-  const {
-    mutate,
-    isLoading,
-    isSuccess,
-    error,
-    reset: mutationReset,
-  } = useAuth();
-
-  useEffect(() => {
-    if (!isSuccess) return;
-
-    login(getValues("email"));
-  }, [isSuccess]);
+  const { mutate, isLoading, error, reset: mutationReset } = useAuth();
 
   useEffect(() => {
     if (!error) return;
@@ -76,7 +60,7 @@ const Auth = ({ mode }: Props) => {
   }, [error]);
 
   const onSubmit: SubmitHandler<AuthFormType> = ({ email, password }) => {
-    mutate({ email, password, mode });
+    mutate({ email: email.toLowerCase(), password, mode });
     setValue("password", "");
     setValue("confirmPassword", "");
   };
