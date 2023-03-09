@@ -2,6 +2,7 @@ import { z } from "zod";
 
 const emailSchema = z
   .string()
+  .toLowerCase()
   .min(1, { message: "Email is required" })
   .email({ message: "Must be valid email" });
 
